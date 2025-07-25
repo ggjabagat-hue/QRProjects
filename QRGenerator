@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>QR Code Generator</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+  <style>
+    body {
+      background-color: #0b3d0b;
+      font-family: Arial, sans-serif;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 20px;
+    }
+
+    h1 {
+      color: #c4f0c4;
+      margin-bottom: 20px;
+    }
+
+    input, select {
+      padding: 10px;
+      width: 100%;
+      max-width: 400px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #4caf50;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    #qrcode {
+      margin-top: 20px;
+      background: white;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>QR Code Generator</h1>
+
+  <input type="text" id="name" placeholder="Enter Full Name" />
+  <input type="text" id="id" placeholder="Enter ID Number" />
+  <input type="text" id="program" placeholder="Enter Program (e.g., BS Forestry)" />
+
+  <select id="year">
+    <option value="">--Select Year Level--</option>
+    <option value="1st Year">1st Year</option>
+    <option value="2nd Year">2nd Year</option>
+    <option value="3rd Year">3rd Year</option>
+    <option value="4th Year">4th Year</option>
+  </select>
+
+  <select id="college">
+    <option value="">--Select College--</option>
+    <option value="CELS">CELS</option>
+    <option value="CESS-IDS">CESS-IDS</option>
+    <option value="CMFS">CMFS</option>
+    <option value="CBIT">CBIT</option>
+  </select>
+
+  <button onclick="generateQRCode()">Generate QR</button>
+  <button onclick="downloadQRCode()">Download QR</button>
+
+  <div id="qrcode"></div>
+
+  <script>
+    let currentQRData = "";
+
+    function generateQRCode() {
+      const name = document.getElementById("name").value.trim();
+      const id = document.getElementById("id").value.trim();
+      const program = document.getElementById("program").value.trim();
+      const year = document.getElementById("year").value;
+      const college = document.getElementById("college").value;
+      const qrContainer = document.getElementById("qrcode");
+
+      qrContainer.innerHTML = "";
+
+      if (!name || !id || !program || !year || !college) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      currentQRData = `${name},${id},${program},${year},${college}`;
+
+      QRCode.toCanvas(document.createElement("canvas"), currentQRData, { width: 256 }, function (err, canvas) {
+        if (err) {
+          console.error(err);
+          alert("Error generating QR Code.");
+          return;
+        }
+        qrContainer.appendChild(canvas);
+      });
+    }
+
+    function downloadQRCode() {
+      const qrCanvas = document.querySelector("#qrcode canvas");
+      if (!qrCanvas) {
+        alert("Generate a QR code first.");
+        return;
+      }
+
+      const link = document.createElement("a");
+      link.download = `qr_${currentQRData.replace(/\W+/g, "_")}.png`;
+      link.href = qrCanvas.toDataURL("image/png");
+      link.click();
+    }
+  </script>
+</body>
+</html>
